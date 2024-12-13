@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ระบบลงเวลาทำงาน</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 id="time">08:15 AM</h1>
+    <div class="input-container">
+      <label for="employeeCode">กรอกรหัสพนักงาน:</label>
+      <input type="text" id="employeeCode" name="employeeCode">
+    </div>
+    <button id="clockInButton">ลงเวลา</button>
+    <button>ย้อนกลับ</button>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+.container {
+  text-align: center; /* จัดข้อความและองค์ประกอบต่างๆ ให้ตรงกลาง */
+  margin: 100px auto; /* เว้นระยะขอบบน 100px และจัดให้อยู่ตรงกลางตามแนวนอน */
+}
+// ฟังก์ชันสำหรับแสดงเวลาปัจจุบัน
+function displayTime() {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  document.getElementById("time").textContent = `${hours}:${minutes}:${seconds}`;
+}
+
+// เรียกใช้ฟังก์ชัน displayTime ทุกๆ วินาที
+setInterval(displayTime, 1000);
+
+// ฟังก์ชันสำหรับจัดการการลงเวลา
+function clockIn() {
+  const employeeCode = document.getElementById("employeeCode").value;
+  // ตรวจสอบว่ามีการกรอกรหัสพนักงานหรือไม่
+  if (employeeCode === "") {
+    alert("กรุณากรอกรหัสพนักงาน");
+    return;
+  }
+
+  // ในส่วนนี้ควรจะมีการส่งข้อมูลรหัสพนักงานไปยัง server เพื่อบันทึกข้อมูล
+  // ตัวอย่างการส่งข้อมูลด้วย fetch API
+  fetch('/api/clockin', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ employeeCode })
+  })
+  .then(response => response.json())
+  .then(data => {
+    // จัดการกับข้อมูลที่ได้รับจาก server เช่น แสดงข้อความยืนยัน
+    console.log(data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+// เพิ่ม event listener ให้กับปุ่มลงเวลา
+document.getElementById("clockInButton").addEventListener("click", clockIn);
+
+// เรียกใช้ฟังก์ชัน displayTime ครั้งแรกเพื่อแสดงเวลาเริ่มต้น
+displayTime();
